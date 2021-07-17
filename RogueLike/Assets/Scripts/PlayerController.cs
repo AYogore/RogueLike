@@ -7,16 +7,18 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
 
     //Movement Parameters for the character
-    public float movement = 0f;
+    private float movement = 0f;
     public float maxMovement = 5f;
     public float acceleration = 5f;
     public float deceleration = 5f;
-    public float rate = 3f;
+    public float accelerationRate = 3f;
     public float sprintMultiplier = 1.5f;
 
     //Basic Stats for the character
     public float health = 100f;
+    public float maxHealth = 100f;
     public float stamina = 100f;
+    public float maxStamina = 100f;
     public float staminaDrainRate = 10f;
     public float staminaRegenerationRate = 10f;
 
@@ -27,11 +29,13 @@ public class PlayerController : MonoBehaviour
      * your base statistics while using different weapons and spells to increase the skill 
      * for the respective type. Have to discuss with others for feedback on the idea
      */
+    private float StaminaRegenTimer = 0.0f;
+    private const float StaminaTimeToRegen = 3.0f;
+    
 
     private Rigidbody2D rb2d;
     private Vector2 moveVelocity;
     private bool isMoving = false;
-    private bool isSprinting = false;
 
     void Start()
     {
@@ -41,29 +45,24 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Stamina Regeneration
-        while (stamina < 100 && isSprinting == false)
-        {
-            stamina = stamina + staminaRegenerationRate * Time.deltaTime;
-            Debug.Log("Stamina = " + stamina);
-        }
+        StaminaBar();
         Movement();
     }
 
     private void FixedUpdate()
     {
-        
+        //Need to clean this up later, looks ugly as sin
         rb2d.MovePosition(rb2d.position + moveVelocity * Time.fixedDeltaTime);
         if (isMoving == true && movement < maxMovement)
         {
-            movement = movement + acceleration * rate * Time.fixedDeltaTime;
+            movement = movement + acceleration * accelerationRate * Time.fixedDeltaTime;
             Debug.Log("Speed = " + movement);
         }
         else
         {
             if (isMoving == true && movement > deceleration * Time.fixedDeltaTime)
             {
-                movement = movement - deceleration * rate * Time.fixedDeltaTime;
+                movement = movement - deceleration * accelerationRate * Time.fixedDeltaTime;
                 Debug.Log("Speed = " + movement);
             }
             else
@@ -79,15 +78,10 @@ public class PlayerController : MonoBehaviour
         //Establishes the movement commands
         Vector2 moveInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 
-        
-
         //Adds a sprint functionality
-        if (Input.GetKey(KeyCode.LeftShift) && stamina >= 0)
+        if (Input.GetKey(KeyCode.LeftShift) && stamina > 0 && isMoving)
         {
             moveVelocity = moveInput.normalized * movement * sprintMultiplier;
-            stamina = stamina - staminaDrainRate * Time.deltaTime;
-            isSprinting = true;
-            Debug.Log("Stamina = " + stamina);
         }
         else
         {
@@ -109,5 +103,29 @@ public class PlayerController : MonoBehaviour
 
     }
     */
+    private void StaminaBar()
+    {
+        bool isSprinting = Input.GetKey(KeyCode.LeftShift);
+
+        if (isSprinting && isMoving)
+        {
+            stamina = Mathf.Clamp(stamina - (staminaDrainRate * Time.deltaTime), 0.0f, maxStamina);
+            Debug.Log("Stamina = " + stamina);
+
+            StaminaRegenTimer = 0.0f;
+        }
+        else if (stamina < maxStamina)
+        {
+            if (StaminaRegenTimer >= StaminaTimeToRegen)
+            {
+                stamina = stamina + (staminaRegenerationRate * Time.deltaTime);
+                Debug.Log("Stamina = " + stamina);
+            }
+            else
+            {
+                StaminaRegenTimer += Time.deltaTime;
+            }
+        }
+    }
 
 }
