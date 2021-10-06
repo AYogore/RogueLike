@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    //Going to add this once I introduce party members/summons
+    //private GameObject[] targets;
     private Transform target;
-    // Start is called before the first frame update
     [SerializeField]
     private float speed;
     [SerializeField]
@@ -16,23 +17,37 @@ public class EnemyController : MonoBehaviour
     private float aggroMaxRange;
     [SerializeField]
     private float aggroMinRange;
+
+    private float deaggroTimer = 0f;
+    private const float timeToDeAggro = 5f;
+
     private float attackCooldown;
+
+    public Vector3 start;
     void Start()
     {
         target = FindObjectOfType<PlayerController>().transform;
+        start = transform.position;
     }
 
-    // Update is called once per frame
+    //Update is called once per frame
     void Update()
     {
         if(Vector3.Distance(target.position , transform.position) <= aggroMaxRange && Vector3.Distance(target.position, transform.position) >= aggroMinRange)
         {
-            followPlayer();
+            transform.position = Vector3.MoveTowards(transform.position, target.transform.position, speed * Time.deltaTime);
+        }
+        else
+        {
+            if (timeToDeAggro <= deaggroTimer)
+            { 
+                transform.position = Vector3.MoveTowards(transform.position, start, speed * Time.deltaTime);
+            }
+            else
+            {
+                deaggroTimer += Time.deltaTime;
+            }
         }
         
-    }
-    public void followPlayer()
-    {
-        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, speed * Time.deltaTime);
     }
 }

@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     public float acceleration = 5f;
     public float deceleration = 5f;
     public float accelerationRate = 3f;
+    public float movementRateChange = 3f;
     public float sprintMultiplier = 1.5f;
 
     //Basic Stats for the character
@@ -29,6 +30,8 @@ public class PlayerController : MonoBehaviour
      * your base statistics while using different weapons and spells to increase the skill 
      * for the respective type. Have to discuss with others for feedback on the idea
      */
+    
+    //Sprint Parameters for the characters
     private float StaminaRegenTimer = 0.0f;
     private const float StaminaTimeToRegen = 3.0f;
     
@@ -38,9 +41,9 @@ public class PlayerController : MonoBehaviour
     private bool isMoving = false;
 
     void Start()
-    {
-        rb2d = GetComponent<Rigidbody2D>();
-    }
+   {
+       rb2d = GetComponent<Rigidbody2D>();
+   }
 
     // Update is called once per frame
     void Update()
@@ -60,15 +63,10 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if (isMoving == true && movement > deceleration * Time.fixedDeltaTime)
+            if (isMoving == false && movement > deceleration * Time.fixedDeltaTime)
             {
                 movement = movement - deceleration * accelerationRate * Time.fixedDeltaTime;
                 Debug.Log("Speed = " + movement);
-            }
-            else
-            {
-                movement = 0;
-                isMoving = false;
             }
         }
     }
@@ -103,8 +101,17 @@ public class PlayerController : MonoBehaviour
 
     }
     */
+
+    /* This makes it so the character can sprint if they
+       push down the shift key while moving around, however
+       it will consume stamina. Stamina will regenerate if
+       the character does not sprint.
+       Will possibly add an option for auto sprinting similar
+       to other roguelikes such as Diablo II.
+    */
     private void StaminaBar()
     {
+        //Checks to see if the shift key is pressed
         bool isSprinting = Input.GetKey(KeyCode.LeftShift);
 
         if (isSprinting && isMoving)
