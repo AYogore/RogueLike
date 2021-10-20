@@ -7,21 +7,37 @@ public class EnemyController : MonoBehaviour
     //Going to add this once I introduce party members/summons
     //private GameObject[] targets;
     private Transform target;
+    private enum LootTable { Gold, Item}
+
+    LootTable lootTable;
+
+    public GameObject lootDrop;
+
+    public string _nameOfEnemy;
+    public float _health;
+    public float _maxHealth;
+    public float _stamina;
 
     //These are the different statuses for the enemy when they
     //are instanciated.
     [SerializeField]
     private float speed;
-    [SerializeField]
-    private float health;
-    [SerializeField]
-    private float stamina;
     
+    [SerializeField]
+    public float experienceValue;
+
     //These are the ranges for when the enemy notices the player.
     [SerializeField]
     private float aggroMaxRange;
     [SerializeField]
     private float aggroMinRange;
+
+    //These are the parameters for the weapons that the enemy has.
+    //These values are temporary for now, they will change once
+    //there are items implemented into the game.
+    //[SerializeField]
+    //private float weaponMinRange = 3;
+    //private float weaponMaxRange = 10;
 
     //The timer for when the enemy no longer is chasing the player
     //After a while they return back to their starting position
@@ -38,6 +54,7 @@ public class EnemyController : MonoBehaviour
     private Vector3 start;
     void Start()
     {
+        _health = _maxHealth;
         //This function scans the environment for an object that
         //has the 'PlayerController' script, this marks them as
         //an enemy and enables them to chase once they go within
@@ -68,7 +85,7 @@ public class EnemyController : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, target.transform.position, speed * Time.deltaTime);
             //This makes it so the deaggroTimer becomes zero once the enemy gives chase to the
             //player. Since the timer constantly is running while the enemy is standing still.
-            //Will work out a fix later for this.
+            
             deaggroTimer = 0;
         }
         else
@@ -94,6 +111,29 @@ public class EnemyController : MonoBehaviour
             //If the timer is not at the threshold, then the timer will simply increment based on the time
             //that has passed.
             deaggroTimer += Time.deltaTime;
+        }
+    }
+
+    private void TakeDamage(float damage)
+    {
+        _health -= damage;
+        CheckDeath();
+    }
+
+    private void CheckOverHeal()
+    {
+        if(_health > _maxHealth)
+        {
+            _health = _maxHealth;
+        }
+    }
+
+    private void CheckDeath()
+    {
+        if(_health <= 0)
+        {
+            Debug.Log($"{_nameOfEnemy} has died");
+            Destroy(gameObject);
         }
     }
 }
