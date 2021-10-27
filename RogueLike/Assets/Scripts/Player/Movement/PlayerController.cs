@@ -1,31 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
+    public Slider _staminaSlider;
     //Movement Parameters for the character
 
-    private float movement = 0f;
-    public float maxMovement = 5f;
+    private float movement;
+    public float maxMovement;
 
-    public float acceleration = 5f;
-    public float deceleration = 5f;
-    public float accelerationRate = 3f;
+    public float acceleration;
+    public float deceleration;
+    public float accelerationRate;
 
-    public float movementRateChange = 3f;
-    public float sprintMultiplier = 1.5f;
+    public float movementRateChange;
+    public float sprintMultiplier;
 
-    public float stamina = 100f;
-    public float maxStamina = 100f;
+    public float stamina;
+    public float maxStamina;
 
-    public float staminaDrainRate = 10f;
-    public float staminaRegenerationRate = 10f;
-
-    public int gold;
+    public float staminaDrainRate;
+    public float staminaRegenerationRate;
     
     //Sprint Parameters for the characters
-    private float StaminaRegenTimer = 0.0f;
+    private float StaminaRegenTimer;
     private const float StaminaTimeToRegen = 3.0f;
     
 
@@ -34,9 +34,12 @@ public class PlayerController : MonoBehaviour
     private bool isMoving = false;
 
     void Start()
-   {
-       rb2d = GetComponent<Rigidbody2D>();
-   }
+    {
+        rb2d = GetComponent<Rigidbody2D>();
+        stamina = maxStamina;
+        UpdateStaminaBar();
+
+    }
 
     // Update is called once per frame
     void Update()
@@ -102,6 +105,7 @@ public class PlayerController : MonoBehaviour
     /// the character does not sprint.
     /// Will possibly add an option for auto sprinting similar
     /// to other roguelikes such as Diablo II.
+    /// This will be moved to the PlayerStatistics eventually
     /// </summary>
     private void StaminaBar()
     {
@@ -112,7 +116,7 @@ public class PlayerController : MonoBehaviour
         {
             stamina = Mathf.Clamp(stamina - (staminaDrainRate * Time.deltaTime), 0.0f, maxStamina);
             //Debug.Log("Stamina = " + stamina);
-
+            UpdateStaminaBar();
             StaminaRegenTimer = 0.0f;
         }
         else if (stamina < maxStamina)
@@ -120,7 +124,7 @@ public class PlayerController : MonoBehaviour
             if (StaminaRegenTimer >= StaminaTimeToRegen)
             {
                 stamina = stamina + (staminaRegenerationRate * Time.deltaTime);
-                //Debug.Log("Stamina = " + stamina);
+                UpdateStaminaBar();
             }
             else
             {
@@ -129,15 +133,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    //This will be moved
-    private void OnTriggerEnter2D(Collider2D collision)
+    private float GetStaminaPercentage()
     {
-        if(collision.gameObject.CompareTag("Gold"))
-        {
-            gold += Random.Range(2, 10);
-            Destroy(collision.gameObject);
-            Debug.Log($"Gold = {gold}");
-        }
+        return stamina / maxStamina;
+    }
+
+    private void UpdateStaminaBar()
+    {
+        _staminaSlider.value = GetStaminaPercentage();
     }
 
 }

@@ -6,22 +6,13 @@ public class EnemyController : MonoBehaviour
 {
     //Going to add this once I introduce party members/summons
     //private GameObject[] targets;
-    private Transform target;
-    private enum LootTable { Gold, Item}
+    public Transform target;
 
-    LootTable lootTable;
-
-    public GameObject lootDrop;
-
-    public string _nameOfEnemy;
-    public float _health;
-    public float _maxHealth;
     public float _stamina;
 
     //These are the different statuses for the enemy when they
     //are instanciated.
-    [SerializeField]
-    private float speed;
+    public float speed;
     
     [SerializeField]
     public float experienceValue;
@@ -32,17 +23,12 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private float aggroMinRange;
 
-    //These are the parameters for the weapons that the enemy has.
-    //These values are temporary for now, they will change once
-    //there are items implemented into the game.
-    //[SerializeField]
-    //private float weaponMinRange = 3;
-    //private float weaponMaxRange = 10;
-
-    //The timer for when the enemy no longer is chasing the player
+    //The timers for when the enemy no longer is chasing the player.
+    //Depending on whether they take damage or just notice the player
+    //the timers are variable.
     //After a while they return back to their starting position
-    private float deaggroTimer = 0f;
-    private const float timeToDeAggro = 5f;
+    private float _deaggroTimer;
+    public float _chaseAggroTimer;
 
     //Will add once attacks are implemented
     //private float attackCooldown;
@@ -54,7 +40,6 @@ public class EnemyController : MonoBehaviour
     private Vector3 start;
     void Start()
     {
-        _health = _maxHealth;
         //This function scans the environment for an object that
         //has the 'PlayerController' script, this marks them as
         //an enemy and enables them to chase once they go within
@@ -70,13 +55,18 @@ public class EnemyController : MonoBehaviour
     //Update is called once per frame
     void Update()
     {
+        ChasePlayer();
+    }
+
+    private void ChasePlayer()
+    {
         //Since the enemy technically sees the player as soon as they get instanced
         //there needs to be a range at which the enemy will give chase. Otherwise the
         //player will be chased right as they enter the game without getting a feel for
         //movement, and that's no fun for anyone.
         //This if statement checks if the player is within range of the enemy and will give
         //chase once they find them. It refreshes for every time update is called.
-        if(Vector3.Distance(target.position , transform.position) <= aggroMaxRange &&
+        if (Vector3.Distance(target.position, transform.position) <= aggroMaxRange &&
             Vector3.Distance(target.position, transform.position) >= aggroMinRange)
         {
             //This moves the enemy towards the player at a constant speed relative to the
@@ -85,21 +75,21 @@ public class EnemyController : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, target.transform.position, speed * Time.deltaTime);
             //This makes it so the deaggroTimer becomes zero once the enemy gives chase to the
             //player. Since the timer constantly is running while the enemy is standing still.
-            
-            deaggroTimer = 0;
+            _deaggroTimer = 0;
         }
         else
         {
-            DeAggro(); 
+            DeAggro();
         }
     }
+
     private void DeAggro()
     {
         //If the player is no longer within range of the enemy, they will stop giving
         //chase and remain there for a certain amount of time. Once it has reached a
         //certain point they will return to their starting position.
         //This checks if the deaggroTimer has reached/exceeded the timer
-        if (timeToDeAggro <= deaggroTimer)
+        if (_chaseAggroTimer <= _deaggroTimer)
         {
             //Once the timer threshold has been met the enemy will return back to their starting position
             //at half of their normal speed. This gives them more time for them to be an obstacle in the
@@ -110,30 +100,7 @@ public class EnemyController : MonoBehaviour
         {
             //If the timer is not at the threshold, then the timer will simply increment based on the time
             //that has passed.
-            deaggroTimer += Time.deltaTime;
-        }
-    }
-
-    private void TakeDamage(float damage)
-    {
-        _health -= damage;
-        CheckDeath();
-    }
-
-    private void CheckOverHeal()
-    {
-        if(_health > _maxHealth)
-        {
-            _health = _maxHealth;
-        }
-    }
-
-    private void CheckDeath()
-    {
-        if(_health <= 0)
-        {
-            Debug.Log($"{_nameOfEnemy} has died");
-            Destroy(gameObject);
+            _deaggroTimer += Time.deltaTime;
         }
     }
 }
