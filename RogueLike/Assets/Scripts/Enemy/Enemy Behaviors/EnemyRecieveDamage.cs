@@ -5,9 +5,11 @@ using UnityEngine.UI;
 
 public class EnemyRecieveDamage : MonoBehaviour
 {
+    public static EnemyRecieveDamage enemy;
     public string _nameOfEnemy;
     public float _health;
     public float _maxHealth;
+    public bool _recievedDamage;
 
     public GameObject _healthBar;
     public Slider _healthBarSlider;
@@ -49,6 +51,7 @@ public class EnemyRecieveDamage : MonoBehaviour
             Debug.Log($"{_nameOfEnemy} has died");
             Destroy(gameObject);
             _chosenLootDrop = Random.Range(0, 1);
+            Debug.Log(_chosenLootDrop);
             _lootDrop = _lootList[_chosenLootDrop];
             Instantiate(_lootDrop, transform.position, Quaternion.identity);
         }

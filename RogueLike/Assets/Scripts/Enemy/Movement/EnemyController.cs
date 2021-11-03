@@ -14,8 +14,6 @@ public class EnemyController : MonoBehaviour
     //are instanciated.
     public float speed;
     
-    [SerializeField]
-    public float experienceValue;
 
     //These are the ranges for when the enemy notices the player.
     [SerializeField]

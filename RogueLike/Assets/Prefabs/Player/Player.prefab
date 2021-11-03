@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 2207292152145714103}
   - component: {fileID: 2207292152145714100}
   - component: {fileID: 2207292152145714101}
-  - component: {fileID: 2207292152145714104}
   - component: {fileID: 2207292152145714107}
   m_Layer: 0
   m_Name: Player
@@ -147,6 +146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ac971f9608a74f43bf50bbd397ddcad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _staminaSlider: {fileID: 0}
   maxMovement: 5
   acceleration: 3
   deceleration: 5
@@ -157,30 +157,6 @@ MonoBehaviour:
   maxStamina: 100
   staminaDrainRate: 10
   staminaRegenerationRate: 10
-  gold: 0
---- !u!114 &2207292152145714104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2207292152145714098}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e0e06870c1f8e14f844ba0e8cddc3f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isFull: 00
-  slots:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!114 &2207292152145714107
 MonoBehaviour:
   m_ObjectHideFlags: 0
